@@ -1,0 +1,53 @@
+# aws/codebuild/standard:2.0
+version: 0.2
+
+phases:
+  install:
+    # https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#runtime-versions-buildspec-file
+    runtime-versions:
+      docker: 18
+    commands:
+      - curl -sL https://sentry.io/get-cli/ | bash
+  pre_build:
+    commands:
+      - aws --version && python3 --version
+      - echo Logging in to Amazon ECR...
+      - $(aws ecr get-login --no-include-email --region $AWS_REGION)
+      # aws-cliのバージョン2からは下記となる
+      # - aws ecr get-login-password | docker login --username AWS --password-stdin https://XXXXXXXXX.dkr.ecr.$AWS_REGION.amazonaws.com
+      # docker-hubへもログインする
+      # https://docs.docker.com/docker-hub/download-rate-limit/
+      - echo '#YYYYYYYYYYY' | docker login --username kakeai --password-stdin
+      - REPOSITORY_URI=XXXXXXXXX.dkr.ecr.$AWS_REGION.amazonaws.com/${IMAGE_NAME}
+      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - export IMAGE_TAG=${IMAGE_TAG}
+      - echo CODEBUILD_RESOLVED_SOURCE_VERSION = $CODEBUILD_RESOLVED_SOURCE_VERSION
+      - echo REPOSITORY_URI = ${REPOSITORY_URI}
+      - echo IMAGE_TAG = ${IMAGE_TAG}
+  build:
+    on-failure: ABORT
+    commands:
+      - ls -al
+      - echo change directory server
+      - cd server
+      - echo check directory
+      - pwd
+      - echo Build started on `date`
+      - echo Building the Docker image...
+      - APPLICATION_ENV=${ENV} ./scripts/fastapi/build_fastapi.sh
+      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
+  post_build:
+    on-failure: ABORT
+    commands:
+      - echo check directory
+      - pwd
+      - echo Build completed on `date`
+      - echo Pushing the Docker images...
+      - docker push $REPOSITORY_URI:latest
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - echo Change CodeBuild Source Directory For Write imagedefinitions.json
+      - cd ${CODEBUILD_SRC_DIR}
+      - echo Writing image definitions file...
+      - echo "[{\"name\":\"kakeai_study01_fastapi\",\"imageUri\":\"${REPOSITORY_URI}:${IMAGE_TAG}\"}]" > imagedefinitions.json
+artifacts:
+  files: imagedefinitions.json
