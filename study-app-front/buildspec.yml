@@ -10,8 +10,8 @@ phases:
       - pip install --upgrade pip
       - pip install --upgrade awscli
       - ls -al
-      - echo modve front directory
-      - cd front
+      - echo move study-app-front directory
+      - cd study-app-front
       - ls -al
       - npm ci
   pre_build:

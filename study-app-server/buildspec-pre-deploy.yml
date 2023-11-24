@@ -5,7 +5,7 @@ phases:
   install:
     # https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#runtime-versions-buildspec-file
     runtime-versions:
-      python: 3.7
+      python: 3.11
   pre_build:
     commands:
       - pip install --upgrade boto3
@@ -15,7 +15,7 @@ phases:
     on-failure: ABORT
     commands:
       - echo change directory server
-      - cd server
+      - cd study-app-server
       - echo check directory
       - pwd
       - echo Build started on `date`
