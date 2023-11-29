@@ -11,11 +11,11 @@ phases:
       - echo Logging in to Amazon ECR...
       # - $(aws ecr get-login --no-include-email --region $AWS_REGION)
       # aws-cliのバージョン2からは下記となる
-      - aws ecr get-login-password | docker login --username AWS --password-stdin https://XXXXXXXXX.dkr.ecr.$AWS_REGION.amazonaws.com
+      - aws ecr get-login-password | docker login --username AWS --password-stdin https://245796545339.dkr.ecr.$AWS_REGION.amazonaws.com
       # docker-hubへもログインする
       # https://docs.docker.com/docker-hub/download-rate-limit/
-      - echo '#YYYYYYYYYYY' | docker login --username username --password-stdin
-      - REPOSITORY_URI=XXXXXXXXX.dkr.ecr.$AWS_REGION.amazonaws.com/${IMAGE_NAME}
+      - echo 'ksh713999' | docker login --username kkszay --password-stdin
+      - REPOSITORY_URI=245796545339.dkr.ecr.$AWS_REGION.amazonaws.com/${IMAGE_NAME}
       - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - export IMAGE_TAG=${IMAGE_TAG}
       - echo CODEBUILD_RESOLVED_SOURCE_VERSION = $CODEBUILD_RESOLVED_SOURCE_VERSION
