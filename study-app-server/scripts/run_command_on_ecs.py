@@ -67,13 +67,13 @@ class RunCommandOnECS:
         self.region = region
         self.region_name = self._region_name(region)
         self.env = env
-        self.cluster = "study01"
+        self.cluster = "study02"
         self.log_client = session.client("logs")
         self._set_parameters(session)
 
     def _set_parameters(self, session):
         ssm_client = session.client("ssm")
-        path = f"/study01/{self.env}/common/aws"
+        path = f"/study02/{self.env}/common/aws"
         self.AWS_SUBNET_A = ssm_client.get_parameter(Name=f"{path}/subnet/public_1a")[
             "Parameter"
         ]["Value"]
@@ -86,16 +86,16 @@ class RunCommandOnECS:
 
         # DB情報
         self.DB_HOST = ssm_client.get_parameter(
-            Name=f"/study01/{self.env}/app/db/host"
+            Name=f"/study02/{self.env}/app/db/host"
         )["Parameter"]["Value"]
         self.DB_NAME = ssm_client.get_parameter(
-            Name=f"/study01/{self.env}/app/db/name"
+            Name=f"/study02/{self.env}/app/db/name"
         )["Parameter"]["Value"]
         self.DB_USER = ssm_client.get_parameter(
-            Name=f"/study01/{self.env}/app/db/username"
+            Name=f"/study02/{self.env}/app/db/username"
         )["Parameter"]["Value"]
         self.DB_PASSWORD = ssm_client.get_parameter(
-            Name=f"/study01/{self.env}/app/db/password"
+            Name=f"/study02/{self.env}/app/db/password"
         )["Parameter"]["Value"]
 
         self.LOGGER.debug(
@@ -131,14 +131,14 @@ class RunCommandOnECS:
         cpu, memory = self._resource_combination(container_size)
         task_role_env_name = self._task_role_env_name(self.env)
         task_def = self.ecs_client.register_task_definition(
-            family=f"{self.env}_study01_run_command",
-            taskRoleArn=f"arn:aws:iam::XXXXXXXXX:role/study01-{task_role_env_name}-ECSServiceTask-{self.region_name}-role",
-            executionRoleArn="arn:aws:iam::XXXXXXXXX:role/ecsTaskExecutionRole",
+            family=f"{self.env}_study02_run_command",
+            taskRoleArn=f"arn:aws:iam::245796545339:role/study02-{task_role_env_name}-ECSServiceTask-{self.region_name}-role",
+            executionRoleArn="arn:aws:iam::245796545339:role/ecsTaskExecutionRole",
             networkMode="awsvpc",
             containerDefinitions=[
                 {
-                    "name": "study01-fastapi",
-                    "image": f"XXXXXXXXX.dkr.ecr.{self.region}.amazonaws.com/study01-fastapi-{self.env}:{image_tag}",
+                    "name": "study02-fastapi",
+                    "image": f"245796545339.dkr.ecr.{self.region}.amazonaws.com/study02-fastapi:{image_tag}",
                     "essential": True,
                     "command": command,
                     "environment": [
@@ -165,7 +165,7 @@ class RunCommandOnECS:
             memory=memory,
             tags=[
                 {"key": "Name", "value": "run_command"},
-                {"key": "Product", "value": "study01"},
+                {"key": "Product", "value": "study02"},
                 {"key": "Env", "value": self.env},
             ],
         )
@@ -184,14 +184,14 @@ class RunCommandOnECS:
             launchType="FARGATE",
             networkConfiguration={
                 "awsvpcConfiguration": {
-                    "subnets": ["subnet-XXXXXXXXX", "subnet-XXXXXXXXX"],
-                    "securityGroups": ["sg-XXXXXXXXX"],
+                    "subnets": ["subnet-0d569cf3df2edab44", "subnet-084eed146762f899e"],
+                    "securityGroups": ["sg-062e6010f317b7c9a"],
                     "assignPublicIp": "ENABLED",
                 }
             },
             tags=[
                 {"key": "Name", "value": "run_command"},
-                {"key": "Product", "value": "study01"},
+                {"key": "Product", "value": "study02"},
                 {"key": "Env", "value": self.env},
             ],
         )
@@ -290,11 +290,11 @@ class RunCommandOnECS:
             self._print_log_r(group, stream, log_events["nextForwardToken"])
 
     def _log_group(self):
-        return f"/study01/{self.env}/ecs/stud01_run_command"
+        return f"/study02/{self.env}/ecs/stud01_run_command"
 
     def _log_stream(self, task_arn):
         task_id = task_arn.split("/")[2]
-        return f"ecs/study01-fastapi/{task_id}"
+        return f"ecs/study02-fastapi/{task_id}"
 
     @staticmethod
     def _parse_env_vars(env_vars):
