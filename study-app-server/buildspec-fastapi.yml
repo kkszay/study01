@@ -45,6 +45,6 @@ phases:
       - echo Change CodeBuild Source Directory For Write imagedefinitions.json
       - cd ${CODEBUILD_SRC_DIR}
       - echo Writing image definitions file...
-      - echo "[{\"name\":\"study01-fastapi\",\"imageUri\":\"${REPOSITORY_URI}:${IMAGE_TAG}\"}]" > imagedefinitions.json
+      - echo "[{\"name\":\"study02-fastapi\",\"imageUri\":\"${REPOSITORY_URI}:${IMAGE_TAG}\"}]" > imagedefinitions.json
 artifacts:
   files: imagedefinitions.json
