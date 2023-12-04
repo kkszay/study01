@@ -184,7 +184,7 @@ class RunCommandOnECS:
             launchType="FARGATE",
             networkConfiguration={
                 "awsvpcConfiguration": {
-                    "subnets": ["subnet-0d569cf3df2edab44", "subnet-084eed146762f899e"],
+                    "subnets": ["subnet-01144fb7f8b5dff7d", "subnet-0dbe69fa0c317f087"],
                     "securityGroups": ["sg-062e6010f317b7c9a"],
                     "assignPublicIp": "ENABLED",
                 }
